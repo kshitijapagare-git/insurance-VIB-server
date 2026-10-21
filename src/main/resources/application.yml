@@ -1,0 +1,22 @@
+insurance:
+  premium:
+    gst-rate: 0.18
+    types:
+      HEALTH:
+        base-rate: 0.02
+        age-loading-applies: true
+      LIFE:
+        base-rate: 0.01
+        age-loading-applies: true
+      MOTOR:
+        base-rate: 0.03
+        age-loading-applies: false
+    age-loadings:
+      - max-age: 29
+        loading: 0.00
+      - max-age: 45
+        loading: 0.10
+      - max-age: 60
+        loading: 0.25
+      - max-age: 2147483647
+        loading: 0.50

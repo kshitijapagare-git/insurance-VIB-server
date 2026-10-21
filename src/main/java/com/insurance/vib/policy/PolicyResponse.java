@@ -1,6 +1,7 @@
 package com.insurance.vib.policy;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 
 public record PolicyResponse(Long id,
@@ -14,5 +15,8 @@ public record PolicyResponse(Long id,
                              BigDecimal basePremium,
                              BigDecimal ageLoading,
                              BigDecimal gst,
-                             BigDecimal totalPremium) {
+                             BigDecimal totalPremium,
+                             String cancellationReason,
+                             Instant cancelledAt,
+                             BigDecimal refundAmount) {
 }

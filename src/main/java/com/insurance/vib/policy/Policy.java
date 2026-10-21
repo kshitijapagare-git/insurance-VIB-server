@@ -14,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 
 @Entity
@@ -59,6 +60,15 @@ public class Policy {
 
     @Column(nullable = false, precision = 14, scale = 2)
     private BigDecimal totalPremium;
+
+    @Column(name = "cancellation_reason", length = 500)
+    private String cancellationReason;
+
+    @Column(name = "cancelled_at")
+    private Instant cancelledAt;
+
+    @Column(name = "refund_amount", precision = 14, scale = 2)
+    private BigDecimal refundAmount;
 
     protected Policy() {
     }
@@ -131,5 +141,24 @@ public class Policy {
         if (status == PolicyStatus.ACTIVE) {
             status = PolicyStatus.EXPIRED;
         }
+    }
+
+    public void cancel(String cancellationReason, Instant cancelledAt, BigDecimal refundAmount) {
+        this.status = PolicyStatus.CANCELLED;
+        this.cancellationReason = cancellationReason;
+        this.cancelledAt = cancelledAt;
+        this.refundAmount = refundAmount;
+    }
+
+    public String getCancellationReason() {
+        return cancellationReason;
+    }
+
+    public Instant getCancelledAt() {
+        return cancelledAt;
+    }
+
+    public BigDecimal getRefundAmount() {
+        return refundAmount;
     }
 }

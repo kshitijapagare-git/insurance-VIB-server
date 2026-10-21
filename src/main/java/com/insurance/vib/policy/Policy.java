@@ -14,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "policies")
@@ -37,6 +38,16 @@ public class Policy {
     @Column(nullable = false)
     private Integer termYears;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(32) default 'ACTIVE'")
+    private PolicyStatus status;
+
+    @Column(name = "start_date")
+    private LocalDate startDate;
+
+    @Column(name = "end_date")
+    private LocalDate endDate;
+
     @Column(nullable = false, precision = 14, scale = 2)
     private BigDecimal basePremium;
 
@@ -53,11 +64,15 @@ public class Policy {
     }
 
     public Policy(Policyholder policyholder, PolicyType type, BigDecimal sumInsured, Integer termYears,
+                  LocalDate startDate,
                   BigDecimal basePremium, BigDecimal ageLoading, BigDecimal gst, BigDecimal totalPremium) {
         this.policyholder = policyholder;
         this.type = type;
         this.sumInsured = sumInsured;
         this.termYears = termYears;
+        this.status = PolicyStatus.ACTIVE;
+        this.startDate = startDate;
+        this.endDate = startDate.plusYears(termYears);
         this.basePremium = basePremium;
         this.ageLoading = ageLoading;
         this.gst = gst;
@@ -98,5 +113,23 @@ public class Policy {
 
     public BigDecimal getTotalPremium() {
         return totalPremium;
+    }
+
+    public PolicyStatus getStatus() {
+        return status;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void markExpired() {
+        if (status == PolicyStatus.ACTIVE) {
+            status = PolicyStatus.EXPIRED;
+        }
     }
 }

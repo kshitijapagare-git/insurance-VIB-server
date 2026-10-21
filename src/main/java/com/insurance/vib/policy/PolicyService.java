@@ -6,6 +6,10 @@ import com.insurance.vib.premium.PremiumCalculation;
 import com.insurance.vib.premium.PremiumCalculator;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.List;
+
 @Service
 public class PolicyService {
 
@@ -34,21 +38,41 @@ public class PolicyService {
                 request.type(),
                 request.sumInsured(),
                 request.termYears(),
+                LocalDate.now(ZoneOffset.UTC),
                 calculation.basePremium(),
                 calculation.ageLoading(),
                 calculation.gst(),
                 calculation.totalPremium());
 
         Policy saved = policyRepository.save(policy);
+        return toResponse(saved);
+    }
+
+    public List<PolicyResponse> list(Integer expiringWithinDays) {
+        if (expiringWithinDays == null) {
+            return policyRepository.findAll().stream().map(PolicyService::toResponse).toList();
+        }
+        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+        return policyRepository
+                .findByStatusAndEndDateBetween(PolicyStatus.ACTIVE, today, today.plusDays(expiringWithinDays))
+                .stream()
+                .map(PolicyService::toResponse)
+                .toList();
+    }
+
+    private static PolicyResponse toResponse(Policy policy) {
         return new PolicyResponse(
-                saved.getId(),
-                saved.getPolicyholder().getId(),
-                saved.getType(),
-                saved.getSumInsured(),
-                saved.getTermYears(),
-                saved.getBasePremium(),
-                saved.getAgeLoading(),
-                saved.getGst(),
-                saved.getTotalPremium());
+                policy.getId(),
+                policy.getPolicyholder().getId(),
+                policy.getType(),
+                policy.getSumInsured(),
+                policy.getTermYears(),
+                policy.getStatus(),
+                policy.getStartDate(),
+                policy.getEndDate(),
+                policy.getBasePremium(),
+                policy.getAgeLoading(),
+                policy.getGst(),
+                policy.getTotalPremium());
     }
 }

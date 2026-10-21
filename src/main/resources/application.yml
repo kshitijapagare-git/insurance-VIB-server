@@ -1,4 +1,7 @@
 insurance:
+  policy:
+    expiry:
+      cron: "0 30 0 * * *"
   premium:
     gst-rate: 0.18
     types:
